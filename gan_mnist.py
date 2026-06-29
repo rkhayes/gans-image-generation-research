@@ -24,8 +24,6 @@ x_data_loader = torch.utils.data.DataLoader(
     shuffle=True
 )
 
-# Por que 0.2 de inclinação? (Plot do gráfico gerado talvez ajude)
-# Onde entra o input x? (Necessário programar forward pass)
 class D(nn.Module):
     def __init__(self):
         super().__init__()
@@ -65,10 +63,8 @@ class G(nn.Module):
 d = D().to(device)
 g = G().to(device)
 
-# Por que BCE Loss? (Necessita pesquisa mais profunda)
 loss_function = nn.BCELoss()
 
-# Por que os otimizadores isolados?
 optimizer_d = optim.Adam(d.parameters(), lr=0.0002)
 optimizer_g = optim.Adam(g.parameters(), lr=0.0002)
 
@@ -125,4 +121,3 @@ for epoch in range(epochs):
             file_path = f"./images/gan_epoch_progress_{epoch+1}.png"
             utils.save_image(g_images, file_path, nrow=3)
             print(f"Image progress grid saved in: {file_path}")
-

@@ -5,6 +5,8 @@ import torchvision
 import torchvision.transforms as transforms
 import torchvision.utils as utils
 
+from tqdm import tqdm
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Running on: {device}")
 
@@ -71,7 +73,9 @@ optimizer_g = optim.Adam(g.parameters(), lr=0.0002)
 epochs = 50
 fixed_noise = torch.randn((9, 100)).to(device)
 
-for epoch in range(epochs):
+epoch_iterator = tqdm(range(epochs), desc="Training GAN", unit="epoch")
+
+for epoch in epoch_iterator:
     # Discard original labels from MNIST with _
     for x_batch, _ in x_data_loader:
         x_batch_size = x_batch.size(0)
@@ -113,6 +117,8 @@ for epoch in range(epochs):
         g_loss.backward()
         optimizer_g.step()
 
+    epoch_iterator.set_postfix({"D_Loss": f"{total_loss.item():.4f}", "G_Loss": f"{g_loss.item():.4f}"})
+
     if (epoch + 1) % 10 == 0:
         g.eval()
         with torch.no_grad():
@@ -120,4 +126,4 @@ for epoch in range(epochs):
             g_images =(g_images + 1.0) / 2.0
             file_path = f"./images/gan_epoch_progress_{epoch+1}.png"
             utils.save_image(g_images, file_path, nrow=3)
-            print(f"Image progress grid saved in: {file_path}")
+            tqdm.write(f"Image progress grid saved in: {file_path}")
